@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Sticker Desk thumbnail</title>
+  <!-- The portfolio card image. Rendered at 1600×1200 with the real <sticker-board>, posed by the script below.
+       Re-render: open thumbnail.html?shot in headless Chrome (see README). -->
+  <style>
+    html, body { margin: 0; width: 1600px; height: 1200px; overflow: hidden; }
+    body {
+      position: relative;
+      background-color: #e3f1da;
+      background-image: repeating-conic-gradient(#e3f1da 0 25%, #d3e9c7 0 50%);
+      background-size: 100px 100px;
+      font-family: ui-rounded, "SF Pro Rounded", system-ui, sans-serif;
+    }
+    sticker-board { position: absolute; inset: 0; --sb-radius: 0; }
+    .title { position: absolute; left: 70px; top: 70px; z-index: 2; transform: rotate(-4deg); transform-origin: left top; }
+    .title svg { display: block; overflow: visible; filter: drop-shadow(0 3px 2px rgba(0,0,0,.16)) drop-shadow(0 14px 20px rgba(20,60,30,.22)); }
+    .pill {
+      position: absolute; left: 112px; top: 335px; z-index: 2; transform: rotate(-4deg);
+      padding: 18px 30px; border-radius: 999px; background: #15291a; color: #fff;
+      font: 700 38px/1 ui-rounded, "SF Pro Rounded", system-ui, sans-serif; letter-spacing: -.01em;
+      box-shadow: 0 10px 24px rgba(20,60,30,.25);
+    }
+    .pill b { color: #b8f08f; font-weight: 800; }
+    .cursor { position: absolute; z-index: 3; width: 74px; filter: drop-shadow(0 4px 6px rgba(0,0,0,.3)); }
+  </style>
+  <script type="module" src="./sticker-board.js"></script>
+</head>
+<body>
+  <sticker-board height="1200" theme="light" storage-key="thumbnail-pose"></sticker-board>
+
+  <div class="title">
+    <svg width="900" height="250" viewBox="0 0 900 250">
+      <defs>
+        <linearGradient id="ink" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#1f4d2b"/><stop offset="1" stop-color="#0f2416"/>
+        </linearGradient>
+      </defs>
+      <text x="20" y="180" font-size="178" font-weight="900" letter-spacing="-6"
+            font-family="ui-rounded, 'SF Pro Rounded', system-ui, sans-serif"
+            stroke="#fff" stroke-width="44" stroke-linejoin="round" paint-order="stroke" fill="url(#ink)">Sticker Desk</text>
+    </svg>
+  </div>
+  <div class="pill">Peel it. Stick it. <b>Make your own.</b></div>
+
+  <!-- Arrow cursor, placed on the peeled flap by the script. -->
+  <svg class="cursor" viewBox="0 0 24 34" hidden>
+    <path d="M2 2 L2 27 L8.2 21.4 L12.3 31 L16.4 29.2 L12.4 19.8 L20.6 19.6 Z"
+          fill="#111" stroke="#fff" stroke-width="2.2" stroke-linejoin="round"/>
+  </svg>
+
+  <script type="module">
+    await customElements.whenDefined('sticker-board');
+    const board = document.querySelector('sticker-board');
+    try { localStorage.removeItem('thumbnail-pose'); } catch {}
+
+    // Hide the desk itself and its buttons: only the stickers sit on the checks.
+    const css = new CSSStyleSheet();
+    css.replaceSync('.ui { display: none !important; } .desk { background: transparent !important; box-shadow: none !important; }');
+    board.shadowRoot.adoptedStyleSheets = [...board.shadowRoot.adoptedStyleSheets, css];
+
+    while (board.stickers.length < 5) await new Promise((r) => setTimeout(r, 50));
+    board.save = () => {}; // never write this pose anywhere
+
+    // Fixed light, so the holo and gloss catch a nice highlight without a mouse.
+    board.motion = { x: 0.55, y: -0.5, t: performance.now() + 1e9 };
+
+    const pose = {
+      rainbow: { size: 400, nx: 0.80, ny: 0.20, rot: 9, finish: 'laminate', z: 1 },
+      hello:   { size: 640, nx: 0.27, ny: 0.62, rot: -8, finish: 'holo', z: 2 },
+      star:    { size: 280, nx: 0.10, ny: 0.95, rot: -14, finish: 'matte', z: 3 },
+      smiley:  { size: 410, nx: 0.65, ny: 0.62, rot: 7, finish: 'gloss', z: 4 },
+      heart:   { size: 250, nx: 0.90, ny: 0.80, rot: -12, finish: 'glitter', z: 5 },
+    };
+    const by = {};
+    for (const st of board.stickers) {
+      Object.assign(st, pose[st.starter]);
+      by[st.starter] = st;
+      st.layout();
+      st.applyStyle();
+    }
+
+    // Lift the heart, like it's being carried.
+    by.heart.lift = 1.35;
+    by.heart.tiltY = -8;
+    by.heart.applyStyle();
+
+    // Peel the smiley from its lower-right edge.
+    const st = by.smiley, deg = 40, len = 0.4 * st.dw;
+    const dir = { x: Math.cos(deg * Math.PI / 180), y: Math.sin(deg * Math.PI / 180) };
+    const c = { x: st.dw / 2, y: st.dh / 2 };
+    let C = { ...c };
+    for (let r = 0; r < st.dw; r += 1) {
+      const p = { x: c.x + dir.x * r, y: c.y + dir.y * r };
+      if (st.alphaLocal(p) < 60) break;
+      C = p;
+    }
+    const inward = { x: -dir.x, y: -dir.y };
+    const P = { x: C.x + inward.x * len, y: C.y + inward.y * len };
+    st.peel = { C, P: { ...P }, T: { ...P }, inward, active: true };
+    st.dirty = true;
+
+    // Cursor on the flap's tip (local → page coordinates).
+    const a = st.angle * Math.PI / 180, lx = P.x - st.dw / 2, ly = P.y - st.dh / 2;
+    const cur = document.querySelector('.cursor');
+    cur.style.left = `${st.x + lx * Math.cos(a) - ly * Math.sin(a) - 4}px`;
+    cur.style.top = `${st.y + lx * Math.sin(a) + ly * Math.cos(a) - 3}px`;
+    cur.hidden = false;
+
+    for (const s of board.stickers) s.dirty = true;
+    document.body.dataset.ready = '1';
+  </script>
+</body>
+</html>

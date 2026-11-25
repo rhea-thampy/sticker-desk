@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Sticker Desk</title>
+  <style>
+    :root {
+      --bg: #ffffff; --ink: #1c1b1f; --muted: #6d6a72; --line: rgba(0,0,0,.1); --chip: #f2f0ec;
+      --accent: #1c1b1f; --accent-ink: #fff; --danger: #e5484d;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root { --bg: #2a2a2e; --ink: #f2f1f4; --muted: #a09ca6; --line: rgba(255,255,255,.12); --chip: #36363b;
+        --accent: #f2f1f4; --accent-ink: #1c1b1f; }
+    }
+    html, body { margin: 0; height: 100%; overflow: hidden; background: var(--bg); color: var(--ink); }
+    body {
+      display: flex; flex-direction: column;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+      -webkit-user-select: none; user-select: none; cursor: default;
+    }
+    header { flex: none; padding: 20px 28px 6px; }
+    header h1 { margin: 0; font-size: 20px; font-weight: 700; letter-spacing: -.01em; }
+    header p { margin: 4px 0 0; font-size: 13px; color: var(--muted); }
+    main { flex: 1; min-height: 0; }
+    sticker-board { height: 100%; --sb-height: 100%; }
+    footer {
+      flex: none; display: flex; align-items: center; gap: 8px; padding: 12px 20px; border-top: 1px solid var(--line);
+      font-size: 13px; color: var(--muted);
+    }
+    footer .count { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    footer button {
+      flex: none; height: 30px; padding: 0 12px; border: 0; border-radius: 999px; background: var(--chip); color: var(--ink);
+      font: inherit; font-weight: 600; cursor: pointer;
+    }
+    footer button:hover { filter: brightness(.96); }
+    footer button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+    footer button.danger:hover { color: var(--danger); }
+    footer button:disabled { opacity: .45; cursor: default; }
+    header { position: relative; padding-right: 150px; }
+    .site { position: absolute; top: 22px; right: 28px; font-size: 13px; font-weight: 600; color: var(--muted); text-decoration: none; white-space: nowrap; }
+    .site:hover { color: var(--ink); text-decoration: underline; }
+    footer button:focus-visible { outline: 2px solid #4c8dff; outline-offset: 2px; }
+  </style>
+  <script type="module" src="sticker-board.js"></script>
+</head>
+<body>
+  <header>
+    <h1>Make a sticker</h1>
+    <a class="site" href="#" data-cmd="website" title="Open the Sticker Desk website in your browser">Visit the website ↗</a>
+    <p>Turn a photo into a sticker, then peel and stick it anywhere on your desktop.</p>
+  </header>
+  <main><sticker-board maker no-starters storage-key="maker"></sticker-board></main>
+  <footer>
+    <span class="count">No stickers yet</span>
+    <button data-cmd="samples" title="Put the sample stickers on your desktop">Add samples</button>
+    <button data-cmd="top" aria-pressed="false" title="Show stickers above your windows, like stickers on a monitor">On top of windows</button>
+    <button data-cmd="clear" class="danger" title="Remove every sticker from your desktop">Peel all off</button>
+  </footer>
+  <script>
+    for (const b of document.querySelectorAll('[data-cmd]')) {
+      b.addEventListener('click', (e) => e.preventDefault() || webkit.messageHandlers.desk.postMessage({ type: 'cmd', name: b.dataset.cmd }));
+    }
+    // The app calls this whenever the desktop changes.
+    window.setDesk = ({ count, onTop }) => {
+      document.querySelector('.count').textContent =
+        count ? `${count} on your desktop` : 'No stickers yet';
+      document.querySelector('[data-cmd="top"]').setAttribute('aria-pressed', String(onTop));
+      document.querySelector('[data-cmd="clear"]').disabled = !count;
+    };
+  </script>
+</body>
+</html>

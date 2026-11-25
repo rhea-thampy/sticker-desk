@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sticker Desk</title>
+  <meta name="description" content="Peel, stick and make your own stickers from photos. Free, right in your browser, plus a Mac app that puts stickers on your real desktop.">
+  <meta property="og:title" content="Sticker Desk">
+  <meta property="og:description" content="Peel it. Stick it. Make your own stickers from photos.">
+  <meta property="og:image" content="https://rhea-thampy.github.io/sticker-desk/og-image.png">
+  <meta property="og:url" content="https://rhea-thampy.github.io/sticker-desk/">
+  <meta name="twitter:card" content="summary_large_image">
+  <style>
+    :root {
+      --check-a: #e3f1da; --check-b: #d3e9c7; --ink: #15291a; --body: #2f4a35; --muted: #557159;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root { --check-a: #14261b; --check-b: #183020; --ink: #eef5ec; --body: #cfe0cc; --muted: #94ad94; }
+    }
+    body {
+      margin: 0; min-height: 100vh; color: var(--ink);
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    }
+    /* Soft green checks, like a picnic blanket or a cutting mat. Two close shades, so the stickers stay the focus. */
+    body {
+      background-color: var(--check-a);
+      background-image: repeating-conic-gradient(var(--check-a) 0 25%, var(--check-b) 0 50%);
+      background-size: 72px 72px; background-attachment: fixed;
+    }
+    section { max-width: 1080px; margin: 0 auto; padding: 64px 16px 72px; }
+    .intro { max-width: 620px; margin-bottom: 28px; }
+    .eyebrow { font-size: 13px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+    h2 { font-size: clamp(30px, 5vw, 48px); letter-spacing: -.03em; margin: 8px 0 12px; }
+    /* Darker than --muted, so it stays readable on the checks without a card behind it. */
+    p { color: var(--body); line-height: 1.55; margin: 0; font-weight: 500; }
+    sticker-board { filter: drop-shadow(0 20px 40px rgba(20, 60, 30, .18)); }
+
+    /* Mac app download */
+    .get { margin-top: 40px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 32px; align-items: start; }
+    .get h3 { font-size: 26px; letter-spacing: -.02em; margin: 6px 0 8px; }
+    .dl {
+      display: inline-flex; align-items: center; gap: 10px; margin-top: 18px; padding: 14px 22px; border-radius: 999px;
+      background: var(--ink); color: var(--check-a); font-weight: 700; font-size: 16px; text-decoration: none;
+      box-shadow: 0 10px 24px rgba(20, 60, 30, .2);
+    }
+    .dl:hover { transform: translateY(-1px); }
+    .dl svg { width: 20px; height: 20px; }
+    .fine { margin-top: 10px; font-size: 13px; color: var(--muted); font-weight: 500; }
+    .first { background: color-mix(in srgb, var(--check-a) 70%, white); border-radius: 18px; padding: 20px 22px; }
+    @media (prefers-color-scheme: dark) { .first { background: color-mix(in srgb, var(--check-a) 80%, black); } }
+    .first b { display: block; margin-bottom: 8px; }
+    .first ol { margin: 0; padding-left: 20px; color: var(--body); line-height: 1.55; font-weight: 500; font-size: 15px; }
+    footer { max-width: 1080px; margin: 0 auto; padding: 0 16px 40px; font-size: 13px; color: var(--muted); font-weight: 500; }
+    footer a { color: inherit; }
+    @media (max-width: 720px) { .get { grid-template-columns: 1fr; } }
+    @media (max-width: 520px) {
+      section { padding-top: 32px; }
+    }
+  </style>
+  <script type="module" src="./sticker-board.js"></script>
+</head>
+<body>
+  <section id="playground">
+    <div class="intro">
+      <div class="eyebrow">Playground</div>
+      <h2>Sticker desk</h2>
+      <p>Peel a sticker from its edge, carry it around and let go to stick it down. Make your own from a photo, give it a finish (matte, gloss, laminated, holographic or glitter), then download it, or arrange your stickers and save them as a wallpaper.</p>
+    </div>
+    <sticker-board height="580"></sticker-board>
+
+    <div class="get" id="mac">
+      <div>
+        <div class="eyebrow">Mac app</div>
+        <h3>Stickers on your real desktop</h3>
+        <p>The free Sticker Desk app puts your stickers right on your Mac's desktop, or on top of your windows. Make them from photos, pick a finish and a size, and peel them around whenever you like.</p>
+        <a class="dl" href="https://github.com/rhea-thampy/sticker-desk/releases/latest/download/Sticker-Desk-mac.zip">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 20h14"/></svg>
+          Download for Mac
+        </a>
+        <div class="fine">Free · macOS 13 or later · Apple silicon and Intel · Windows version coming</div>
+      </div>
+      <div class="first">
+        <b>Opening it the first time</b>
+        <ol>
+          <li>Unzip the download and drag <i>Sticker Desk</i> into Applications.</li>
+          <li>Open it. macOS will say it can't verify the developer, because this is an indie app that isn't registered with Apple. Click Done.</li>
+          <li>Go to System Settings → Privacy &amp; Security, scroll down and click <b style="display:inline">Open Anyway</b> next to Sticker Desk.</li>
+          <li>That's it: it opens normally from then on.</li>
+        </ol>
+      </div>
+    </div>
+  </section>
+  <footer>Photos are turned into stickers on your own device and never uploaded. · <a href="https://github.com/rhea-thampy/sticker-desk">Source on GitHub</a></footer>
+</body>
+</html>
