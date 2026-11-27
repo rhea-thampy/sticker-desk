@@ -45,6 +45,12 @@
     }
     .dl:hover { transform: translateY(-1px); }
     .dl svg { width: 20px; height: 20px; }
+    .cta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 18px; margin-top: 22px; }
+    .cta .dl { margin-top: 0; }
+    .howto { font-size: 14px; font-weight: 600; color: var(--muted); text-decoration: none; }
+    .howto:hover { color: var(--ink); text-decoration: underline; }
+    .first { transition: box-shadow .4s; }
+    .first.flash { box-shadow: 0 0 0 3px var(--ink); }
     .fine { margin-top: 10px; font-size: 13px; color: var(--muted); font-weight: 500; }
     .first { background: color-mix(in srgb, var(--check-a) 70%, white); border-radius: 18px; padding: 20px 22px; }
     @media (prefers-color-scheme: dark) { .first { background: color-mix(in srgb, var(--check-a) 80%, black); } }
@@ -65,6 +71,13 @@
       <div class="eyebrow">Playground</div>
       <h2>Sticker desk</h2>
       <p>Peel a sticker from its edge, carry it around and let go to stick it down. Make your own from a photo, give it a finish (matte, gloss, laminated, holographic or glitter), then download it, or arrange your stickers and save them as a wallpaper.</p>
+      <div class="cta">
+        <a class="dl top-dl" href="https://github.com/rhea-thampy/sticker-desk/releases/latest/download/Sticker-Desk-mac.zip">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 20h14"/></svg>
+          Download for Mac
+        </a>
+        <a class="howto" href="#mac">Free app · How to open it ↓</a>
+      </div>
     </div>
     <sticker-board height="580"></sticker-board>
 
@@ -91,5 +104,16 @@
     </div>
   </section>
   <footer>Photos are turned into stickers on your own device and never uploaded. · <a href="https://github.com/rhea-thampy/sticker-desk">Source on GitHub</a></footer>
+  <script>
+    // After the download starts, show how to open the app the first time.
+    document.querySelector('.top-dl').addEventListener('click', () => {
+      setTimeout(() => {
+        document.getElementById('mac').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        const box = document.querySelector('.first');
+        box.classList.add('flash');
+        setTimeout(() => box.classList.remove('flash'), 2400);
+      }, 400);
+    });
+  </script>
 </body>
 </html>
